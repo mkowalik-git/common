@@ -54,6 +54,7 @@ CORE_FILES = {
     "validation/acceptance-checklist.md",
     "validation/launch-checklist.md",
     "validation/data-onboarding-checklist.md",
+    "validation/test-evidence.md",
 }
 
 REQUIRED_ENV_KEYS = {
@@ -232,6 +233,12 @@ SECTION_REQUIREMENTS = {
         "## Restore-Demo Checks",
         "## Derived Artifact Rebuild",
         "## Failure Handling",
+    ],
+    "validation/test-evidence.md": [
+        "## Red Tests",
+        "## Green Tests",
+        "## A+ Grading Gate",
+        "## Golden Parity",
     ],
     "validation/acceptance-checklist.md": [
         "## External Readiness",
@@ -1217,6 +1224,7 @@ class Validator:
         launch_path = "validation/launch-checklist.md"
         rebuild_path = "docs/customer-rebuild.md"
         onboarding_path = "validation/data-onboarding-checklist.md"
+        test_evidence_path = "validation/test-evidence.md"
         ui_path = "docs/ui-concept.md"
 
         if self.exists(deployment_path):
@@ -1260,6 +1268,12 @@ class Validator:
                     self.add(onboarding_path, f"data-onboarding checklist must cover `{needle}`")
             if "admin_token" not in text and "authorization" not in text:
                 self.add(onboarding_path, "data-onboarding checklist must include the admin token or Authorization check for destructive dataset flows")
+
+        if self.exists(test_evidence_path):
+            text = self.read_text(test_evidence_path).lower()
+            for needle in ("red", "fail", "green", "pass", "a+", "grade", "golden", "parity"):
+                if needle not in text:
+                    self.add(test_evidence_path, f"test evidence must mention `{needle}`")
 
         working_prd_path = "input/working-prd.md"
         if self.exists(working_prd_path):

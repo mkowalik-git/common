@@ -1941,6 +1941,28 @@ h2 {
 
 ## Failure Handling
 """,
+    "validation/test-evidence.md": """# Test Evidence
+
+## Red Tests
+
+- Record tests that failed before the implementation change.
+- Include the command, failure summary, and why the failure proves the missing behavior.
+
+## Green Tests
+
+- Record the same tests passing after implementation.
+- Include the command, pass summary, and any runtime smoke evidence.
+
+## A+ Grading Gate
+
+- Run `python3 scripts/grade_livestack_bundle.py <solution-root>` from `$livestacks-orchestrator`.
+- The bundle only passes when the grade is `A+` and the grading report says `Pass: yes`.
+
+## Golden Parity
+
+- Confirm `stack/compose.yml` and `stack/.env.example` match the neutral golden LiveStack baseline.
+- Confirm the app, ORDS, guide, screenshots, dataset-admin flow, and Oracle evidence work like the golden version before delivery.
+""",
     "output/guide-screenshots/inventory.md": """# Guide Screenshot Inventory
 
 Replace this placeholder inventory by running automated guide screenshot capture against the live app.

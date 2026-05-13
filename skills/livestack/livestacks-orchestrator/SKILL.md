@@ -9,6 +9,7 @@ Turn a PRD, partial PRD, or sparse business brief into one converged LiveStacks 
 
 ## Quick Start
 
+- Run `python3 scripts/self_update.py --auto --json` from this skill directory before substantial orchestration work. If it reports `"updated": true`, re-read this `SKILL.md` from disk before continuing. If the check skips because GitHub, `git`, or validation is unavailable, continue with the current skill and mention the warning only if it affects the run.
 - Accept three input modes: full `PRD`, partial `Merge`, or brief-only `Bootstrap`.
 - Require `industry` and `pain_point` for `Bootstrap` mode.
 - Accept workbook-style input, bullets, free-form notes, or full PRDs. Normalize them with `references/input-normalization.md`.
@@ -34,6 +35,7 @@ Turn a PRD, partial PRD, or sparse business brief into one converged LiveStacks 
 - When a canonical local LiveStack guide already exists, use it as the structure and cadence baseline for guide authoring, then apply only the solution-specific deltas.
 - Treat `$playwright` or `$webapp-testing` as optional screenshot helpers. Prefer them when already installed, but do not auto-install them by default because browser or Node runtime prerequisites vary by machine.
 - Run `python3 scripts/validate_livestack_bundle.py <solution-root>` before calling a bundle production-ready. Use it after scaffold markers are cleared to catch cross-file drift in compose, env, docs, guide manifests, screenshot inventory, Oracle-evidence wiring, mock-backed runtime fallbacks, missing automated database bootstrap, and ORDS routes that exist only on paper.
+- Run `python3 scripts/grade_livestack_bundle.py <solution-root>` after semantic validation. A bundle only passes when it receives `A+`, the report says `Pass: yes`, and `validation/test-evidence.md` records tests that failed before the change and passed after the change.
 - Run `python3 scripts/check_skill_package.py` before sharing, zipping, or embedding this skill. It catches stale version metadata, missing bundled helpers, Python syntax errors, and transient cache or macOS metadata files that should not ship.
 - If a skill is a strong match, invoke it explicitly.
 - Require subagents for independent specialist roles when the runtime and session policy allow it. Fall back to local role simulation only when subagents are unavailable, the work is too tightly coupled to split cleanly, or the user explicitly asks for no delegation. Record the exception reason in the role ledger.
@@ -149,6 +151,7 @@ Turn a PRD, partial PRD, or sparse business brief into one converged LiveStacks 
    - Ensure the normal `podman compose up -d --build` path includes an automated database bootstrap path inside `stack/` when the bundle ships schema, ORDS, security, or seed SQL artifacts. Manual post-start SQL apply instructions are recovery notes, not the primary contract.
    - Run `podman compose config` from the `stack/` directory and fix every compose-contract mismatch it exposes before calling the bundle production-ready.
    - Run `python3 scripts/validate_livestack_bundle.py <solution-root>` after the compose contract is clean and fix every semantic error it reports before calling the bundle production-ready, including mock runtime fallbacks, missing automated bootstrap, and ORDS routes that are not actually wired into the app.
+   - Run `python3 scripts/grade_livestack_bundle.py <solution-root>` and do not pass the bundle unless it gets `A+` with golden-core parity and red/green test evidence.
 10. Author the LiveStack guide:
    - Use `$livestack-guide-builder` when it is installed, including when it was installed earlier from the bundled snapshot.
    - Use `python3 scripts/scaffold_livestack_guide.py <solution-root>` if the `guide/` folder does not already exist.
@@ -162,8 +165,9 @@ Turn a PRD, partial PRD, or sparse business brief into one converged LiveStacks 
    - Do not modify `workshops/*/index.html`. Treat those files as read-only, update the manifests instead, and run the official LiveLabs markdown validator until the guide is clean.
    - Run `python3 scripts/find_scaffold_markers.py <solution-root>` and clear every reported blocker in `stack/`, `database/`, `guide/`, and required docs before calling the bundle production-ready.
    - Run `python3 scripts/validate_livestack_bundle.py <solution-root>` and fix guide, screenshot-inventory, and cross-file alignment issues before calling the bundle production-ready.
-11. Run the devil's-advocate pass and revise weak areas.
-12. Deliver the final package and a concise summary of remaining risks.
+11. Record red/green test evidence in `validation/test-evidence.md`: tests that failed before the final fix, the same tests passing after the fix, the A+ grading command, and the golden-parity result.
+12. Run the devil's-advocate pass and revise weak areas.
+13. Deliver the final package only when the grading report is `A+` / `Pass: yes`; otherwise report blockers and keep iterating.
 
 ## Specialist Skill Detection And Invocation
 
@@ -252,6 +256,7 @@ Also generate or specify:
 - documentation set
 - launch validation checklist
 - data onboarding validation checklist
+- red/green test evidence and A+ grading report in `validation/test-evidence.md`
 - customer rebuild guidance for replacing demo data with customer data
 
 Use `references/package-contract.md` as the detailed checklist.
@@ -279,6 +284,7 @@ Use `references/package-contract.md` as the detailed checklist.
 - `scripts/init_livestack_bundle.py` to scaffold a canonical LiveStacks solution folder before filling it with real artifacts.
 - `scripts/scaffold_livestack_guide.py` to create the required `guide/` workshop by delegating to the sibling `$livestack-guide-builder` scaffold script when that skill is installed or after the bundled ensure step installs it.
 - `scripts/check_skill_package.py` to validate release metadata, required package paths, script syntax, and cache/metadata hygiene before distribution.
+- `scripts/grade_livestack_bundle.py` to grade generated bundles and pass only on `A+` golden-core parity, clean semantic validation, guide/screenshot evidence, and red/green test evidence.
 - `scripts/sync_livestack_guide_builder_bundle.py` to refresh the bundled `livestack-guide-builder` snapshot from the installed live skill during maintainer updates.
 - `scripts/find_scaffold_markers.py` to catch leftover placeholder content that must be replaced before delivery.
 - `scripts/validate_livestack_bundle.py` to catch semantic cross-file drift after placeholder cleanup, including compose and env contract mismatches, weak guide-manifest wiring, screenshot inventory problems, missing Oracle-evidence surfaces, incomplete dataset-admin API routes, unprotected destructive dataset routes, and undocumented direct app-to-database runtime access.

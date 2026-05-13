@@ -18,8 +18,10 @@ Version: see [`VERSION`](./VERSION)
 
 - `SKILL.md`: primary orchestration contract
 - `SUPPORT.md`: public prerequisites, support matrix, and support boundaries
+- `update.json`: canonical public GitHub update source and validation command
 - `references/`: built-in fallback playbooks and guardrails
 - `scripts/`: scaffolding, install-helper, and validation utilities
+- `tests/`: package-level regression tests for the grading gate and release behavior
 - `assets/bundled/oracle-db-skills/`: portable bundled Oracle database helper snapshot
 - `assets/bundled/livestack-guide-builder/`: portable bundled LiveStack guide runbook helper snapshot
 - `assets/bundled/redwood-creator/`: portable bundled Oracle JET / Redwood UI helper snapshot
@@ -49,6 +51,13 @@ Maintainers can refresh bundled helper snapshots from the currently installed li
 - `python3 scripts/sync_oracle_db_bundle.py`
 - `python3 scripts/sync_livestack_guide_builder_bundle.py`
 - `python3 scripts/check_skill_package.py`
+- `python3 -m unittest discover -s tests -p 'test_*.py'`
+
+On each substantial invocation, run:
+
+- `python3 scripts/self_update.py --auto --json`
+
+The updater checks the public GitHub `main` directory at `skills/livestack/livestacks-orchestrator`, validates a staged copy, and installs it automatically when the local content hash differs. It does not create backups; if GitHub, `git`, or validation is unavailable, it skips the update and leaves the current skill in place.
 
 ## Runtime Expectations
 
@@ -64,7 +73,7 @@ Required when generating or validating runnable LiveStacks bundles:
 - `podman`
 - `podman compose`
 
-## 0.1.0-preview.13 Beta Bar
+## 0.1.0-preview.15 Beta Bar
 
 This preview is intended for guided internal beta use. The first generated application iteration is expected to be more than a scaffold:
 
@@ -85,6 +94,8 @@ This preview is intended for guided internal beta use. The first generated appli
 - direct app-to-database runtime access must be documented as a bootstrap, migration, readiness, or admin exception; normal application APIs stay ORDS-first
 - generated `guide/` content must be a LiveStack demo runbook with desktop, sandbox, and tenancy workshop variants
 - `validate_livestack_bundle.py` checks the story, UI, dataset, and Oracle evidence contract before a bundle is called production-ready
+- generated bundles must record red/green test evidence in `validation/test-evidence.md`
+- `grade_livestack_bundle.py` is the final gate; only `A+` with `Pass: yes` is acceptable
 
 ## Quick Start
 
@@ -100,6 +111,7 @@ This preview is intended for guided internal beta use. The first generated appli
 4. For generated solution bundles, run:
    - `python3 scripts/find_scaffold_markers.py <solution-root>`
    - `python3 scripts/validate_livestack_bundle.py <solution-root>`
+   - `python3 scripts/grade_livestack_bundle.py <solution-root>`
 
 ## Output Contract
 
@@ -138,12 +150,20 @@ Before calling a generated LiveStacks bundle production-ready, the expected veri
 1. `python3 scripts/find_scaffold_markers.py <solution-root>`
 2. `podman compose config` from `<solution-root>/stack`
 3. `python3 scripts/validate_livestack_bundle.py <solution-root>`
-4. LiveLabs markdown validation for the generated `guide/`
+4. `python3 scripts/grade_livestack_bundle.py <solution-root>`
+5. LiveLabs markdown validation for the generated `guide/`
 
 Before sharing or embedding the skill package itself, run:
 
 ```text
 python3 scripts/check_skill_package.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+Before substantial orchestration work, run:
+
+```text
+python3 scripts/self_update.py --auto --json
 ```
 
 ## Support Notes
