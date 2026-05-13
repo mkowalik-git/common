@@ -13,10 +13,13 @@ from pathlib import Path
 REQUIRED_PATHS = (
     "SKILL.md",
     "VERSION",
+    "update.json",
     "agents/openai.yaml",
     "scripts/discover_specialist_skills.py",
+    "scripts/self_update.py",
     "scripts/init_livestack_bundle.py",
     "scripts/validate_livestack_bundle.py",
+    "scripts/grade_livestack_bundle.py",
     "scripts/find_scaffold_markers.py",
     "scripts/ensure_oracle_db_skill.py",
     "scripts/ensure_livestack_guide_builder.py",
@@ -35,6 +38,7 @@ REQUIRED_PATHS = (
     "assets/bundled/oracle-db-skills/BUNDLED_SKILL.md",
     "assets/bundled/livestack-guide-builder/BUNDLED_SKILL.md",
     "assets/bundled/redwood-creator/BUNDLED_SKILL.md",
+    "tests/test_grading_gate.py",
 )
 
 TRANSIENT_DIR_NAMES = {

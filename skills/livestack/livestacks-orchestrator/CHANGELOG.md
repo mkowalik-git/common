@@ -4,6 +4,20 @@ All notable changes to `livestacks-orchestrator` should be recorded in this file
 
 ## Unreleased
 
+## 0.1.0-preview.15 - 2026-05-13
+
+- Added `scripts/grade_livestack_bundle.py`, an A+ grading gate that only passes generated bundles with clean semantic validation, neutral golden-core compose/env parity, ORDS-backed runtime evidence, Oracle JET / Redwood UI evidence, Oracle AI evidence, guide screenshot proof, red/green test evidence, and package hygiene.
+- Added `validation/test-evidence.md` to the generated bundle contract so production-ready outputs record tests that failed before the change and passed after the change.
+- Added `tests/test_grading_gate.py` with red/green coverage for A+ golden bundles, missing test evidence, and golden-core drift.
+- Updated the orchestration workflow so `validate_livestack_bundle.py` is not the final gate; bundles only pass when `grade_livestack_bundle.py` reports `A+` and `Pass: yes`.
+
+## 0.1.0-preview.14 - 2026-05-13
+
+- Added `scripts/self_update.py` so each invocation can check the public GitHub `main` copy at `skills/livestack/livestacks-orchestrator` and install it automatically when the local skill differs.
+- Added `update.json` with the canonical repo, branch, skill path, and validation command for the self-update contract.
+- Kept the update path pragmatic: sparse Git clone, content-hash comparison, staged package validation, lock-protected replacement, no backups, and fail-soft behavior when GitHub, `git`, or validation is unavailable.
+- Updated the skill quick start so Codex runs the updater before substantial orchestration work and re-reads `SKILL.md` after a successful install.
+
 ## 0.1.0-preview.13 - 2026-05-13
 
 - Added `scripts/check_skill_package.py` for package-level release hygiene before sharing or embedding the skill: required-path checks, frontmatter checks, version-surface checks, Python script syntax checks, and transient cache/macOS metadata rejection.

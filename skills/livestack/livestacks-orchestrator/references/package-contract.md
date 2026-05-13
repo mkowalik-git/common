@@ -32,6 +32,8 @@ Every production-ready run must also make the runtime truth explicit:
 - the app UI must look like a polished Oracle Redwood / Oracle JET application from the first iteration, not a generic dashboard, Tailwind shell, or unstyled scaffold
 - every generated bundle must be production-credible for external users by default: protected destructive/admin routes, fail-closed dependency behavior, externalized secrets, CORS/HTTPS/token guidance, least-privilege ORDS/app identities, and a `/healthz` readiness path tied to real dependencies
 - every generated app should include a visible AI capability unless the working PRD explicitly rejects AI with a documented reason; Oracle Internals must show the chosen AI mode, Oracle feature, model/profile boundary, and data-egress caveat
+- every generated bundle must record red/green test evidence: which tests failed before the final change, which same tests passed after the change, and the A+ grading report
+- `scripts/grade_livestack_bundle.py <solution-root>` must return `A+` and `Pass: yes` before the bundle is called production-ready
 
 ## Role-Owned Artifact Expectations
 
@@ -213,6 +215,7 @@ The default scaffold is only a starting point. It is not production-ready until 
     acceptance-checklist.md
     launch-checklist.md
     data-onboarding-checklist.md
+    test-evidence.md
   output/
     guide-screenshots/
       inventory.json
@@ -264,6 +267,7 @@ The default scaffold is only a starting point. It is not production-ready until 
 - `validation/acceptance-checklist.md`: external readiness, multi-agent execution evidence, Oracle feature evidence, security posture, live runtime proof, remaining risks, and outcome checks
 - `validation/launch-checklist.md`: environment, startup, health, and first-run verification checks
 - `validation/data-onboarding-checklist.md`: validate-only, upload, restore-demo, and derived-artifact rebuild checks for customer data flows
+- `validation/test-evidence.md`: red tests that failed before the final fix, green tests that passed after the fix, A+ grading output, and golden-core parity evidence
 
 ## Minimum Configuration Surface
 

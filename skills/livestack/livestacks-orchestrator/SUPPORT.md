@@ -26,9 +26,11 @@ Those are related, but they are not the same thing.
 | Area | Status | Required | Optional | Notes |
 | --- | --- | --- | --- | --- |
 | Skill package install | Supported | Codex skill runtime, local filesystem access, `python3` | none | Install under `$CODEX_HOME/skills/livestacks-orchestrator` or `~/.codex/skills/livestacks-orchestrator`. |
+| Skill self-update | Supported, fail-soft | `python3`, `git`, network access to the public GitHub repo | none | Run `python3 scripts/self_update.py --auto --json`; if GitHub, `git`, or validation is unavailable, the current local skill remains in place. |
 | Skill package use without companion skills | Supported | same as above | none | The orchestrator can install bundled `oracle-db-skills`, `livestack-guide-builder`, and `redwood-creator` when they are missing. |
 | LiveStacks bundle authoring | Supported | `python3`, `podman`, `podman compose` | `bash`-compatible shell, PowerShell for Windows wrapper review | Authoring means generating and validating a real `stack/`, `database/`, and `guide/` bundle. |
 | Compose contract validation | Supported | `podman compose` | none | Production-ready bundles are expected to pass `podman compose config`. |
+| A+ grading gate | Supported | `python3` | none | Generated bundles only pass when `scripts/grade_livestack_bundle.py <solution-root>` reports `A+` and `Pass: yes`. |
 | Guide scaffold generation | Supported | `python3` | bundled or installed `livestack-guide-builder` | Generates LiveStack demo runbooks with desktop, sandbox, and tenancy workshop variants. |
 | Guide markdown validation | Conditionally supported | external LiveLabs markdown validator installation | none | The validator is not bundled by this package. |
 | Automated screenshot capture | Optional | none | installed `$playwright` or `$webapp-testing` | Screenshot helpers are intentionally not auto-installed. |
@@ -47,6 +49,7 @@ For the skill package itself:
 - Codex skill runtime
 - local filesystem access
 - `python3`
+- `git` and public GitHub network access for automatic self-update checks
 
 For authoring production-ready LiveStacks bundles:
 
@@ -78,6 +81,7 @@ Helper installers:
 - `scripts/ensure_livestack_guide_builder.py`
 - `scripts/ensure_redwood_creator.py`
 - `scripts/check_skill_package.py` validates package metadata, required paths, Python script syntax, and cache or macOS metadata hygiene before sharing or bundling.
+- `scripts/self_update.py` checks the public GitHub `main` copy of this skill, validates a staged copy, and installs it automatically when content differs.
 
 ## Generated Bundle Expectations
 
@@ -96,6 +100,8 @@ The default generated bundle contract assumes:
 - documented exceptions for any direct app-to-database runtime access; ordinary business APIs remain ORDS-first
 - Oracle Sans, restrained Redwood app geometry, documented Redwood colors, and JET-style icons for app navigation, controls, status, dataset work, and Oracle Internals
 - a LiveStack demo runbook guide with required `desktop`, `sandbox`, and `tenancy` workshop variants
+- red/green test evidence in `validation/test-evidence.md`
+- final A+ grading with golden-core parity through `scripts/grade_livestack_bundle.py`
 
 ## Internal Beta Distribution Notes
 
@@ -147,8 +153,11 @@ For a generated solution bundle, the expected verification path is:
 1. `python3 scripts/find_scaffold_markers.py <solution-root>`
 2. `podman compose config` from `<solution-root>/stack`
 3. `python3 scripts/validate_livestack_bundle.py <solution-root>`
-4. local LiveLabs markdown validation for `<solution-root>/guide`
+4. `python3 scripts/grade_livestack_bundle.py <solution-root>`
+5. local LiveLabs markdown validation for `<solution-root>/guide`
 
 For the skill package itself, run:
 
 1. `python3 scripts/check_skill_package.py`
+2. `python3 -m unittest discover -s tests -p 'test_*.py'`
+3. `python3 scripts/self_update.py --check-only --json`
